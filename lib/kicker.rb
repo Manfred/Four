@@ -1,0 +1,2 @@
+class Kicker
+end

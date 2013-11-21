@@ -1,0 +1,1 @@
+require 'peck/flavors/vanilla'
