@@ -4,8 +4,10 @@ class Kicker
   class Watcher
     class << self
       attr_accessor :formatter
+      attr_accessor :buffer_size
     end
 
+    self.buffer_size = 1
     self.formatter = Proc.new do |time, message|
       time.strftime('%H:%M:%S.') + time.usec.to_s[0,2] + ' | ' + message
     end
@@ -14,7 +16,10 @@ class Kicker
 
     def initialize(options={})
       @options = options
+
       @formatter = self.class.formatter
+      @buffer_size = self.class.buffer_size
+
       @cwd = Dir.pwd
       @recipe = Recipe.new(watcher: self, cwd: @cwd)
       KICKFILES.each do |path|
@@ -35,14 +40,17 @@ class Kicker
 
     def execute(command)
       Kicker.debug("Executing: #{command}")
+      write("\n")
       PTY.open do |master, slave|
         read, write = IO.pipe
         pid = spawn(command, in: read, out: slave)
         read.close
         slave.close
-
-        write(master.read)
+        while(buffer = master.read(@buffer_size))
+          write(buffer)
+        end
       end
+      write("\n")
     end
 
     def run
