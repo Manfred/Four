@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   ]
   s.extra_rdoc_files = %w{ COPYING README.rdoc }
 
+  s.add_dependency("tidings")
   s.add_development_dependency("peck")
   s.add_development_dependency("fakefs")
 end
