@@ -12,4 +12,5 @@ end
 
 Peck::Context.once do |context|
   include Test::IOHelpers
+  include Bendy::Shape
 end

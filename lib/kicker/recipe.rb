@@ -5,7 +5,7 @@ class Kicker
     end
     self.recipes_path = File.expand_path('recipe', __dir__)
 
-    attr_accessor :cwd, :watcher
+    attr_accessor :cwd, :watcher, :processors
 
     def initialize(cwd: Dir.pwd, watcher: nil)
       @cwd = cwd
@@ -28,9 +28,10 @@ class Kicker
       end
     end
 
-    def process(callable)
-      ::Kicker.debug("Adding processor: #{callable}")
-      @processors << callable
+    def process(callable=nil, &block)
+      processor = callable || block
+      ::Kicker.debug("Adding processor: #{processor}")
+      @processors << processor
     end
 
     def call(file_or_path, flags)
