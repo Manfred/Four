@@ -38,5 +38,11 @@ class Kicker
         processor.call(file_or_path, flags)
       end
     end
+
+    def self.available
+      Dir.glob(File.join(recipes_path, '**/*.rb')).map do |filename|
+        File.basename(filename, '.rb')
+      end
+    end
   end
 end

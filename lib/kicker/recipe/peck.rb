@@ -44,7 +44,7 @@ class Kicker
         case file_or_path
         when %r{_test\.rb$}
           specs << file_or_path
-        when %r{^(app|lib)}
+        when %r{\.rb$}
           specs.concat map_to_specs(file_or_path)
         end
         execute_specs(specs)
