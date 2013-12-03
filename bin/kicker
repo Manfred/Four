@@ -7,4 +7,4 @@ if $0 == __FILE__
 end
 
 require 'kicker'
-Kicker.run
+Kicker::CLI.run(ARGV)
