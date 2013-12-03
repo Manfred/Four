@@ -1,4 +1,5 @@
 require File.expand_path('test_helper', __dir__)
+require 'kicker'
 
 describe Kicker do
   it "is defined" do
