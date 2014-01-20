@@ -39,7 +39,7 @@ class Kicker
     end
 
     def execute(command)
-      Kicker.debug("Executing: #{command}")
+      report("Executing: #{command}")
       write("\n")
       PTY.open do |master, slave|
         read, write = IO.pipe
@@ -54,8 +54,9 @@ class Kicker
     end
 
     def run
-      Kicker.debug("Started watching: #{@cwd}")
+      report("Started watching: #{@cwd}")
       Tidings.watch(@cwd) do |file_or_path, flags|
+        file_or_path = file_or_path[@cwd.length+1..-1]
         Kicker.debug("Event: #{file_or_path}: #{flags.inspect}")
         @recipe.call(file_or_path, flags)
       end
