@@ -4,4 +4,8 @@ describe Kicker do
   it "is defined" do
     Kicker.should.be.kind_of(Class)
   end
+
+  it "returns its version" do
+    Kicker.version.should == Kicker::VERSION
+  end
 end

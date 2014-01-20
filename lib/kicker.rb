@@ -10,4 +10,8 @@ class Kicker
   def self.debug(*)
     # By default we ignore all debugging information
   end
+
+  def self.version
+    Kicker::VERSION
+  end
 end
