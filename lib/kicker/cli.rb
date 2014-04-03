@@ -65,6 +65,7 @@ class Kicker
       end
       puts " -c, --clear:     Clear console before each run."
       puts " -d, --debug:     Print debug messages for Kicker internals."
+      puts " -k, --kickfile:  Use a specific Kickfile."
       puts " -l, --latency:   The time to collect events before acting on them. (float)."
       puts " -n, --no-notify: Don't send notifications."
       puts " -q, --quiet:     Quiet output. Don't print timestamps when logging."
@@ -83,6 +84,12 @@ class Kicker
       end
     end
 
+    def kickfile
+      if path = option_value('k', 'kickfile')
+        File.absolute_path(path)
+      end
+    end
+
     def recipes
       @options.map do |switch, name|
         if %w(r recipe).include?(switch)
@@ -94,10 +101,11 @@ class Kicker
     def options
       {
         activate: option_value('a', 'activate'),
-        verbosity: verbosity,
         clear_before_execute: any_switch?('c', 'clear'),
+        kickfile: kickfile,
         notifications: !any_switch?('n', 'no-notify'),
-        recipes: recipes
+        recipes: recipes,
+        verbosity: verbosity
       }
     end
 

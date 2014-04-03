@@ -1,0 +1,2 @@
+def ignore(expressions)
+end

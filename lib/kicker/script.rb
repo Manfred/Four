@@ -3,6 +3,8 @@ class Kicker
     class Context
       attr_accessor :cwd, :watcher, :script
 
+      include Kicker::Deprecated
+
       def initialize(cwd: Dir.pwd, watcher: nil, script: nil)
         @cwd = cwd
         @watcher = watcher
@@ -10,7 +12,7 @@ class Kicker
       end
 
       def recipe(name)
-        filename = File.join(Kicker::Script.recipes_path, name.to_s + '.rb')
+        filename = File.join(::Kicker::Script.recipes_path, name.to_s + '.rb')
         if File.exist?(filename)
           ::Kicker.debug("Loading recipe: #{filename}")
           load(filename)
@@ -20,7 +22,7 @@ class Kicker
       end
 
       def load(filename)
-        eval(File.read(filename))
+        eval(File.read(filename), binding, filename)
       end
 
       def process(callable=nil, &block)
@@ -55,7 +57,14 @@ class Kicker
 
     def call(file_or_path, flags)
       @processors.each do |processor|
-        processor.call(file_or_path, flags)
+        case processor.method(:call).arity
+        when 0
+          processor.call
+        when 1
+          processor.call([file_or_path])
+        else
+          processor.call(file_or_path, flags)
+        end
       end
     end
 

@@ -26,12 +26,26 @@ class Kicker
     end
 
     def load_kickfile
+      if @options[:kickfile]
+        Kicker.debug("Loading Kickfile from: #{@options[:kickfile]}")
+        @script.load(@options[:kickfile])
+        true
+      else
+        false
+      end
+    end
+
+    def load_default_kickfile
+      loaded = false
       KICKFILES.each do |path|
         kickfile = File.join(@cwd, path)
         if File.exist?(kickfile)
+          Kicker.debug("Loading Kickfile from: #{kickfile}")
           @script.load(kickfile)
+          loaded = true
         end
       end
+      loaded
     end
 
     def load_recipes
@@ -41,7 +55,7 @@ class Kicker
     end
 
     def load
-      load_kickfile
+      load_kickfile || load_default_kickfile
       load_recipes
     end
 

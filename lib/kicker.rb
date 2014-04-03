@@ -1,7 +1,9 @@
 require 'tidings'
+require 'kicker/core_ext/array'
 
 class Kicker
   autoload :CLI,          'kicker/cli'
+  autoload :Deprecated,   'kicker/deprecated'
   autoload :Formatter,    'kicker/formatter'
   autoload :OptionParser, 'kicker/option_parser'
   autoload :Script,       'kicker/script'
