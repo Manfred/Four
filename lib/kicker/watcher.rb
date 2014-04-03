@@ -21,12 +21,28 @@ class Kicker
 
       @cwd = Dir.pwd
       @script = Script.new(watcher: self, cwd: @cwd)
+
+      load
+    end
+
+    def load_kickfile
       KICKFILES.each do |path|
         kickfile = File.join(@cwd, path)
         if File.exist?(kickfile)
           @script.load(kickfile)
         end
       end
+    end
+
+    def load_recipes
+      @options[:recipes].each do |recipe|
+        @script.recipe(recipe)
+      end if @options[:recipes]
+    end
+
+    def load
+      load_kickfile
+      load_recipes
     end
 
     def clear_before_execute?

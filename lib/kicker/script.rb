@@ -45,6 +45,10 @@ class Kicker
       @context = Kicker::Script::Context.new(cwd: @cwd, watcher: @watcher, script: self)
     end
 
+    def recipe(name)
+      @context.recipe(name)
+    end
+
     def load(filename)
       @context.load(filename)
     end
