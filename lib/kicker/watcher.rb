@@ -13,12 +13,15 @@ class Kicker
     end
 
     KICKFILES = %w(Kickfile .kick)
+    CLEAR = "\e[H\e[2J"
 
     def initialize(options={})
       @options = options
 
       @formatter = self.class.formatter
       @buffer_size = self.class.buffer_size
+      
+      @out = options[:out] || $stdout
 
       @cwd = Dir.pwd
       @script = Script.new(watcher: self, cwd: @cwd)
@@ -31,14 +34,23 @@ class Kicker
     end
 
     def report(message)
-      $stdout.puts(@formatter.call(Time.now, message))
+      @out.puts(@formatter.call(Time.now, message))
     end
 
     def write(buffer)
-      $stdout.write(buffer)
+      @out.write(buffer)
+    end
+
+    def clear
+      write(CLEAR)
+    end
+
+    def clear_before_execute?
+      @options[:clear_before_execute] == true
     end
 
     def execute(command)
+      clear if clear_before_execute?
       report("Executing: #{command}")
       write("\n")
       PTY.open do |master, slave|

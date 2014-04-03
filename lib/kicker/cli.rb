@@ -83,9 +83,9 @@ class Kicker
       {
         activate: option_value('a', 'activate'),
         verbosity: verbosity,
-        clear: any_switch?('c', 'clear'),
+        clear_before_execute: any_switch?('c', 'clear'),
         notifications: !any_switch?('n', 'no-notify'),
-        recipes: recipes
+        recipes: recipes,
       }
     end
 
