@@ -67,11 +67,11 @@ class Kicker
 
     def verbosity
       if any_switch?('s', 'silent')
-        0
+        :silent
       elsif any_switch?('q', 'quiet')
-        1
+        :quiet
       else
-        2
+        :regular
       end
     end
 

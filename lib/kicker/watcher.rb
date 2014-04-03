@@ -3,22 +3,18 @@ require 'pty'
 class Kicker
   class Watcher
     class << self
-      attr_accessor :formatter
       attr_accessor :buffer_size
     end
 
     self.buffer_size = 1
-    self.formatter = Proc.new do |time, message|
-      time.strftime('%H:%M:%S.') + time.usec.to_s[0,2] + ' | ' + message
-    end
 
     KICKFILES = %w(Kickfile .kick)
     CLEAR = "\e[H\e[2J"
 
     def initialize(options={})
       @options = options
+      Kicker.debug("Watcher options: #{@options}")
 
-      @formatter = self.class.formatter
       @buffer_size = self.class.buffer_size
       
       @out = options[:out] || $stdout
@@ -33,8 +29,22 @@ class Kicker
       end
     end
 
+    def clear_before_execute?
+      @options[:clear_before_execute] == true
+    end
+
+    def verbosity
+      @options[:verbosity] || :regular
+    end
+
+    def formatter_for_verbosity
+      Kicker.formatter(verbosity)
+    end
+
     def report(message)
-      @out.puts(@formatter.call(Time.now, message))
+      unless verbosity == :silent
+        @out.puts(formatter_for_verbosity.call(Time.now, message))
+      end
     end
 
     def write(buffer)
@@ -45,14 +55,10 @@ class Kicker
       write(CLEAR)
     end
 
-    def clear_before_execute?
-      @options[:clear_before_execute] == true
-    end
-
     def execute(command)
       clear if clear_before_execute?
       report("Executing: #{command}")
-      write("\n")
+      write("\n") unless verbosity == :silent
       PTY.open do |master, slave|
         read, write = IO.pipe
         pid = spawn(command, in: read, out: slave)
