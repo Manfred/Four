@@ -13,6 +13,10 @@ class Collector
     self._written << args
   end
 
+  def flush
+    # noop
+  end
+
   def to_s
     _written.join
   end

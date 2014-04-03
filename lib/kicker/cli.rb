@@ -45,6 +45,14 @@ class Kicker
       available[0..-2].join(', ') + ', and ' + available[-1]
     end
 
+    def dump_options?
+      any_switch?('dump-options')
+    end
+
+    def dump_options
+      puts options.inspect
+    end
+
     def show_usage
       puts "Usage: #{$0} [options] [paths to watch]"
       puts ""
@@ -76,7 +84,11 @@ class Kicker
     end
 
     def recipes
-      []
+      @options.map do |switch, name|
+        if %w(r recipe).include?(switch)
+          name
+        end
+      end.compact
     end
 
     def options
@@ -85,7 +97,7 @@ class Kicker
         verbosity: verbosity,
         clear_before_execute: any_switch?('c', 'clear'),
         notifications: !any_switch?('n', 'no-notify'),
-        recipes: recipes,
+        recipes: recipes
       }
     end
 
@@ -94,6 +106,8 @@ class Kicker
         show_version
       elsif show_usage?
         show_usage
+      elsif dump_options?
+        dump_options
       else
         require 'kicker/debug' if debug?
         watcher = ::Kicker::Watcher.new(options)

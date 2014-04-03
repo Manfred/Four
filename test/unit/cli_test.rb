@@ -13,6 +13,12 @@ describe Kicker::CLI do
     end.should.include 'Usage:'
   end
 
+  it "parses recipes out of the options" do
+    eval(capture_stdout do
+      run('--dump-options -r peck -r ignore')
+    end)[:recipes].should == %w(peck ignore)
+  end
+
   private
 
   def run(arg)
