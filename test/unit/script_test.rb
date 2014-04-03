@@ -1,47 +1,47 @@
 require File.expand_path('../test_helper', __dir__)
 
-describe Kicker::Recipe do
+describe Kicker::Script do
   it "returns available recipes" do
-    Kicker::Recipe.available.should.not.be.empty
-    Kicker::Recipe.available.should.include('ignore')
+    Kicker::Script.available_recipes.should.not.be.empty
+    Kicker::Script.available_recipes.should.include('ignore')
   end
 end
 
-describe "A", Kicker::Recipe do
+describe "A", Kicker::Script do
   it "initializes with a CWD and Watcher" do
     cwd = '/path/to/code'
     watcher = shape(Kicker::Watcher)
-    recipe = Kicker::Recipe.new(cwd: cwd, watcher: watcher)
+    script = Kicker::Script.new(cwd: cwd, watcher: watcher)
 
-    recipe.cwd.should == cwd
-    recipe.watcher.should == watcher
-    recipe.processors.should.be.empty
+    script.cwd.should == cwd
+    script.watcher.should == watcher
+    script.processors.should.be.empty
   end
 
-  describe "concerning recipes" do
+  describe "concerning files" do
     before do
-      @recipe = Kicker::Recipe.new
+      @script = Kicker::Script.new
     end
 
-    it "loads a named recipe" do
-      @recipe.recipe(:peck)
+    it "loads a script file" do
+      @script.load(File.join(Kicker::Script.recipes_path, 'peck.rb'))
       # The Peck recipe adds a file path processor
-      @recipe.processors.length.should === 1
+      @script.processors.length.should === 1
     end
   end
 
   describe "concerning events" do
     before do
-      @recipe = Kicker::Recipe.new
+      @script = Kicker::Script.new
     end
 
     it "forwards events to all its processors instances" do
       one = EventCollector.new
       two = EventCollector.new
-      @recipe.processors = [one, two]
+      @script.processors = [one, two]
 
       event = '/path', [:created, :file]
-      @recipe.call(*event)
+      @script.call(*event)
 
       one.collected.should == [event]
       two.collected.should == [event]
@@ -51,13 +51,13 @@ describe "A", Kicker::Recipe do
       events = []
       count = 0
 
-      @recipe.process do |file_or_path, flags|
+      @script.processors << -> (file_or_path, flags) {
         events << [file_or_path, flags]
-      end
-      @recipe.process(Proc.new { count += 1 })
+      }
+      @script.processors << Proc.new { count += 1 }
 
       event = '/path', [:created, :file]
-      @recipe.call(*event)
+      @script.call(*event)
 
       events.should == [event]
       count.should == 1

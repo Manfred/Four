@@ -4,7 +4,7 @@ class Kicker
   autoload :CLI,          'kicker/cli'
   autoload :Watcher,      'kicker/watcher'
   autoload :OptionParser, 'kicker/option_parser'
-  autoload :Recipe,       'kicker/recipe'
+  autoload :Script,       'kicker/script'
   autoload :VERSION,      'kicker/version'
 
   def self.debug(*)

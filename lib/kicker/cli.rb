@@ -41,7 +41,7 @@ class Kicker
     end
 
     def available_recipes_as_sentence
-      available = Kicker::Recipe.available
+      available = Kicker::Script.available_recipes
       available[0..-2].join(', ') + ', and ' + available[-1]
     end
 

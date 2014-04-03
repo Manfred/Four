@@ -21,11 +21,11 @@ class Kicker
       @buffer_size = self.class.buffer_size
 
       @cwd = Dir.pwd
-      @recipe = Recipe.new(watcher: self, cwd: @cwd)
+      @script = Script.new(watcher: self, cwd: @cwd)
       KICKFILES.each do |path|
         kickfile = File.join(@cwd, path)
         if File.exist?(kickfile)
-          @recipe.load(kickfile)
+          @script.load(kickfile)
         end
       end
     end
@@ -58,7 +58,7 @@ class Kicker
       Tidings.watch(@cwd) do |file_or_path, flags|
         file_or_path = file_or_path[@cwd.length+1..-1]
         Kicker.debug("Event: #{file_or_path}: #{flags.inspect}")
-        @recipe.call(file_or_path, flags)
+        @script.call(file_or_path, flags)
       end
     end
   end
