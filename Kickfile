@@ -1,1 +1,8 @@
 recipe :peck
+
+process do |file_or_path, flags|
+  case file_or_path
+  when 'Gemfile'
+    watcher.execute 'bundle install'
+  end
+end

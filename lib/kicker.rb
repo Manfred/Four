@@ -1,5 +1,4 @@
 require 'tidings'
-require 'kicker/core_ext/array'
 
 class Kicker
   autoload :CLI,          'kicker/cli'

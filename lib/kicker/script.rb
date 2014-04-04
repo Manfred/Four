@@ -1,70 +1,39 @@
 class Kicker
   class Script
-    class Context
-      attr_accessor :cwd, :watcher, :script
-
-      include Kicker::Deprecated
-
-      def initialize(cwd: Dir.pwd, watcher: nil, script: nil)
-        @cwd = cwd
-        @watcher = watcher
-        @script = script
-      end
-
-      def recipe(name)
-        filename = File.join(::Kicker::Script.recipes_path, name.to_s + '.rb')
-        if File.exist?(filename)
-          ::Kicker.debug("Loading recipe: #{filename}")
-          load(filename)
-        else
-          ::Kicker.debug("Unknown recipe: #{name}")
-        end
-      end
-
-      def load(filename)
-        eval(File.read(filename), binding, filename)
-      end
-
-      def process(callable=nil, &block)
-        processor = callable || block
-        ::Kicker.debug("Adding processor: #{processor}")
-        script.processors << processor
-      end
-    end
+    autoload :Context,           'script/context'
+    autoload :DeprecatedContext, 'script/deprecated_context'
 
     class << self
       attr_accessor :recipes_path
     end
     self.recipes_path = File.expand_path('recipe', __dir__)
 
-    attr_accessor :cwd, :watcher, :recipes, :processors
+    attr_accessor :cwd, :watcher, :recipes, :contexts
 
     def initialize(cwd: Dir.pwd, watcher: nil)
       @cwd = cwd
       @watcher = watcher
       @recipes = []
-      @processors = []
-      @context = Kicker::Script::Context.new(cwd: @cwd, watcher: @watcher, script: self)
+      @contexts = []
+    end
+
+    def create_context
+      context = Kicker::Script::Context.new(cwd: cwd, watcher: watcher, script: self)
+      @contexts << context
+      context
     end
 
     def recipe(name)
-      @context.recipe(name)
+      create_context.recipe(name)
     end
 
     def load(filename)
-      @context.load(filename)
+      create_context.load(filename)
     end
 
     def call(file_or_path, flags)
-      @processors.each do |processor|
-        case processor.method(:call).arity
-        when 0
-          processor.call
-        when 1
-          processor.call([file_or_path])
-        else
-          processor.call(file_or_path, flags)
-        end
+      contexts.each do |context|
+        context.call(file_or_path, flags)
       end
     end
 

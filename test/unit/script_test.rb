@@ -15,7 +15,7 @@ describe "A", Kicker::Script do
 
     script.cwd.should == cwd
     script.watcher.should == watcher
-    script.processors.should.be.empty
+    script.contexts.should.be.empty
   end
 
   describe "concerning files" do
@@ -25,8 +25,8 @@ describe "A", Kicker::Script do
 
     it "loads a script file" do
       @script.load(File.join(Kicker::Script.recipes_path, 'peck.rb'))
-      # The Peck recipe adds a file path processor
-      @script.processors.length.should === 1
+      # The Peck recipe adds a file path context
+      @script.contexts.length.should === 1
     end
   end
 
@@ -35,10 +35,10 @@ describe "A", Kicker::Script do
       @script = Kicker::Script.new
     end
 
-    it "forwards events to all its processors instances" do
+    it "forwards events to all its contexts instances" do
       one = EventCollector.new
       two = EventCollector.new
-      @script.processors = [one, two]
+      @script.contexts = [one, two]
 
       event = '/path', [:created, :file]
       @script.call(*event)
@@ -47,14 +47,14 @@ describe "A", Kicker::Script do
       two.collected.should == [event]
     end
 
-    it "forwards events to all its processor procs" do
+    it "forwards events to all its context procs" do
       events = []
       count = 0
 
-      @script.processors << -> (file_or_path, flags) {
+      @script.contexts << -> (file_or_path, flags) {
         events << [file_or_path, flags]
       }
-      @script.processors << Proc.new { count += 1 }
+      @script.contexts << Proc.new { count += 1 }
 
       event = '/path', [:created, :file]
       @script.call(*event)

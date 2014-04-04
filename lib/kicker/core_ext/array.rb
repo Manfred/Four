@@ -36,5 +36,3 @@ class Kicker
     end
   end
 end
-
-Array.send(:include, Kicker::CoreExt::Array)
