@@ -1,3 +1,3 @@
 class Kicker
-  VERSION = '4.0.0.p1'
+  VERSION = '4.0.0.p2'
 end
