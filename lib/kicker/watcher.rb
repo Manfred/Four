@@ -97,6 +97,7 @@ class Kicker
         while(buffer = master.read(@buffer_size))
           write(buffer)
         end
+        Process.waitpid(pid)
       end
       write("\n")
     end
